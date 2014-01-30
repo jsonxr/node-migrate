@@ -1,0 +1,22 @@
+{
+  "name": "node-migrate",
+  "version": "0.0.1",
+  "description": "Devops friendly migrations",
+  "scripts": {
+    "test": "node_modules/nodeunit/bin/nodeunit tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/jsonxr/node-migrate.git"
+  },
+  "author": "Jason Rowland",
+  "license": "MIT",
+  "devDependencies": {
+    "nodeunit": "~0.8.4",
+    "nodelint": "~0.6.2"
+  },
+  "dependencies": {
+    "commander": "~2.1.0",
+    "winston": "~0.7.2"
+  }
+}

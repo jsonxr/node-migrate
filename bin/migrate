@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var migrate = require('../lib/migrate');
+
+program
+    .version('0.0.1')
+    .parse(process.argv);
+
+var arg = 'help';
+if (program.args) {
+    arg = program.args[0];
+    if (arg !== 'init' && arg !== 'bootstrap') {
+        arg = 'help';
+    }
+}
+
+migrate[arg]();
