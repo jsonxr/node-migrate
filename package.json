@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Devops friendly migrations",
   "scripts": {
-    "test": "node_modules/nodeunit/bin/nodeunit tests"
+    "test": "node_modules/nodelint/nodelint lib;node_modules/nodeunit/bin/nodeunit tests"
   },
   "repository": {
     "type": "git",
