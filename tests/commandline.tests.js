@@ -9,38 +9,10 @@ var logger = require('winston'),
 //----------------------------------------------------------------------------
 
 // Remove the output so it doesn't interfere
-logger.remove(logger.transports.Console);
-
+logger.clear();
 // Clean up the temporary files when we are done
 temp.track();
 
-module.exports.setUp = function (callback) {
-    callback();
-}
-
-module.exports.tearDown = function (callback) {
-    callback();
-}
-
-
-//----------------------------------------------------------------------------
-// Unit Tests....
-//----------------------------------------------------------------------------
-
-var tests = module.exports['commands'] = {
-    "invalid commands": function(test) {
-        test.expect(1);
-        var argv = getArgv('blah');
-        commandline(argv, function (err, retval) {
-            test.ok(retval === -1, "'blah' command should not exist.");
-            test.done();
-        });
-    }
-}
-
-checkCommand(tests, 'init');
-checkCommand(tests, 'create');
-checkCommand(tests, 'drop');
 
 //----------------------------------------------------------------------------
 // Helper methods
@@ -73,13 +45,42 @@ function checkCommand(tests, name) {
     tests[name] = check;
 }
 
+
+//----------------------------------------------------------------------------
+// Unit Tests....
+//----------------------------------------------------------------------------
+
+module.exports.setUp = function (callback) {
+    callback();
+};
+
+module.exports.tearDown = function (callback) {
+    callback();
+};
+
+var tests = module.exports.commands = {
+    "invalid commands": function (test) {
+        test.expect(1);
+        var argv = getArgv('blah');
+        commandline(argv, function (err, retval) {
+            test.ok(retval === -1, "'blah' command should not exist.");
+            test.done();
+        });
+    }
+};
+
+checkCommand(tests, 'init');
+checkCommand(tests, 'create');
+checkCommand(tests, 'drop');
+
+
 //----------------------------------------------------------------------------
 // Rewire - Mock dependencies
 //----------------------------------------------------------------------------
 
 commandline.__set__({
     migrate: {
-        execute: function(command, callback) {
+        execute: function (command, callback) {
             callback(null, 0);
         }
     }

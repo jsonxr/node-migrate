@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Devops friendly migrations",
   "scripts": {
-    "test": "node_modules/nodelint/nodelint --config nodelint.cfg lib; node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests"
+    "test": "node_modules/nodelint/nodelint --config nodelint.cfg lib tests; node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests"
   },
   "repository": {
     "type": "git",
