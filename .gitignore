@@ -14,6 +14,9 @@ results
 npm-debug.log
 node_modules
 
+# This is the instanbul folder that is created
+coverage
+
 #-----------------------------------------------------------------------------
 # IDE files
 #-----------------------------------------------------------------------------
