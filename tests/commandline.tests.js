@@ -1,6 +1,5 @@
 var logger = require('winston'),
     rewire = require("rewire"),
-    temp = require('temp'),
     commandline = rewire('../lib/commandline');
 
 
@@ -10,8 +9,6 @@ var logger = require('winston'),
 
 // Remove the output so it doesn't interfere
 logger.clear();
-// Clean up the temporary files when we are done
-temp.track();
 
 
 //----------------------------------------------------------------------------
