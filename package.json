@@ -4,8 +4,9 @@
     "description": "Devops friendly migrations",
     "scripts": {
         "lint": "node_modules/nodelint/nodelint --config nodelint.cfg lib tests",
-        "cover": "node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests",
-        "test": "node_modules/nodelint/nodelint --config nodelint.cfg lib tests; node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests"
+        "coverage": "node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests",
+        "test": "node_modules/nodeunit/bin/nodeunit tests",
+        "all": "node_modules/nodelint/nodelint --config nodelint.cfg lib tests; node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests"
     },
     "repository": {
         "type": "git",
@@ -17,7 +18,8 @@
         "nodeunit": "~0.8.4",
         "rewire": "~2.0.0",
         "nodelint": "~0.6.2",
-        "istanbul": "~0.2.4"
+        "istanbul": "~0.2.4",
+        "coveralls": "~2.7.0"
     },
     "dependencies": {
         "commander": "~2.1.0",
