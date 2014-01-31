@@ -1,25 +1,27 @@
 {
-  "name": "node-migrate",
-  "version": "0.0.1",
-  "description": "Devops friendly migrations",
-  "scripts": {
-    "test": "node_modules/nodelint/nodelint --config nodelint.cfg lib tests; node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests"
-  },
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/jsonxr/node-migrate.git"
-  },
-  "author": "Jason Rowland",
-  "license": "MIT",
-  "devDependencies": {
-    "nodeunit": "~0.8.4",
-    "rewire": "~2.0.0",
-    "nodelint": "~0.6.2",
-    "istanbul": "~0.2.4"
-  },
-  "dependencies": {
-    "commander": "~2.1.0",
-    "winston": "~0.7.2",
-    "temp": "~0.6.0"
-  }
+    "name": "node-migrate",
+    "version": "0.0.1",
+    "description": "Devops friendly migrations",
+    "scripts": {
+        "lint": "node_modules/nodelint/nodelint --config nodelint.cfg lib tests",
+        "cover": "node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests",
+        "test": "node_modules/nodelint/nodelint --config nodelint.cfg lib tests; node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests"
+    },
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/jsonxr/node-migrate.git"
+    },
+    "author": "Jason Rowland",
+    "license": "MIT",
+    "devDependencies": {
+        "nodeunit": "~0.8.4",
+        "rewire": "~2.0.0",
+        "nodelint": "~0.6.2",
+        "istanbul": "~0.2.4"
+    },
+    "dependencies": {
+        "commander": "~2.1.0",
+        "winston": "~0.7.2",
+        "temp": "~0.6.0"
+    }
 }
