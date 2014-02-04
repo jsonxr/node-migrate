@@ -1,7 +1,10 @@
 var logger = require('winston'),
     rewire = require("rewire"),
-    commandline = rewire('../lib/commandline');
+    StringReader = require('./lib/stringReader'),
+    StringWriter = require('./lib/stringWriter'),
 
+    commandline = rewire('../lib/commandline'),
+    migrateCommand;
 
 //----------------------------------------------------------------------------
 // Initialize Test Environment
@@ -63,10 +66,40 @@ var tests = module.exports.commands = {
             test.ok(retval === -1, "'blah' command should not exist.");
             test.done();
         });
+    },
+    "init defaults": function (test) {
+        // Need to set the process.stdin for promtly
+        var argv = getArgv('init'),
+            stdin = new StringReader('\n\n'),
+            stdout = new StringWriter(); // (just ignore the output)
+        commandline.__set__({ process: { stdin: stdin, stdout: stdout } });
+
+        test.expect(3);
+
+        commandline(argv, function (err, retval) {
+            test.ok(retval === 0, "'init' command should exist.");
+            test.ok(migrateCommand.args.engine === 'mysql', 'Default engine should be mysql');
+            test.ok(migrateCommand.args.database === 'test', 'Default database should be test');
+            test.done();
+        });
+    },
+
+    "init answers": function (test) {
+        // Need to set the process.stdin for promtly
+        var argv = getArgv('init'),
+            stdin = new StringReader('postgres\ndev\n'),
+            stdout = new StringWriter(); // (just ignore the output)
+        commandline.__set__({ process: { stdin: stdin, stdout: stdout } });
+        test.expect(3);
+        commandline(argv, function (err, retval) {
+            test.ok(retval === 0, "'init' command should exist.");
+            test.ok(migrateCommand.args.engine === 'postgres', 'engine should be postgres');
+            test.ok(migrateCommand.args.database === 'dev', 'database should be dev');
+            test.done();
+        });
     }
 };
 
-checkCommand(tests, 'init');
 checkCommand(tests, 'create');
 checkCommand(tests, 'drop');
 
@@ -78,9 +111,8 @@ checkCommand(tests, 'drop');
 commandline.__set__({
     migrate: {
         execute: function (command, callback) {
+            migrateCommand = command;
             callback(null, 0);
         }
     }
 });
-
-
