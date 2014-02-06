@@ -1,0 +1,7 @@
+name: CHANGELOG
+columns:
+    - { name: "version", type: "string", key: true, nullable: false }
+    - { name: "src", type: "text" }
+    - { name: "migration", type: "text" }
+    - { name: "applied_by", type: "string" }
+    - { name: "applied_on_utc", type: "datetime" }

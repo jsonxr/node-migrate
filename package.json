@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "description": "Devops friendly migrations",
   "scripts": {
-    "lint": "node_modules/nodelint/nodelint --config nodelint.cfg lib tests",
+    "jshint": "node_modules/jshint/bin/jshint lib tests",
     "coverage": "node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests;open coverage/lcov-report/index.html",
     "test": "node_modules/nodeunit/bin/nodeunit tests",
-    "all": "node_modules/nodelint/nodelint --config nodelint.cfg lib tests; node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests"
+    "all": "node_modules/jshint/bin/jshint lib tests; node node_modules/istanbul/lib/cli.js cover node_modules/nodeunit/bin/nodeunit tests"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
   "devDependencies": {
     "nodeunit": "~0.8.4",
     "rewire": "~2.0.0",
-    "nodelint": "~0.6.2",
+    "jshint": "~2.4.3",
     "istanbul": "~0.2.4",
     "coveralls": "~2.7.0"
   },
@@ -26,6 +26,9 @@
     "winston": "~0.7.2",
     "temp": "~0.6.0",
     "mysql": "~2.0.1",
-    "async": "~0.2.10"
+    "async": "~0.2.10",
+    "underscore": "~1.5.2",
+    "js-yaml": "~3.0.1",
+    "node-json-minify": "~0.1.3-a"
   }
 }

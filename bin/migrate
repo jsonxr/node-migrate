@@ -2,10 +2,13 @@
 
 var commandline = require('../lib/commandline');
 
-commandline(process.argv, function (err, retcode) {
+
+commandline(process.cwd(), process.argv, function (err) {
     if (err) {
         console.log(err);
+        process.exit(-1);
+    } else {
+        // i chose the ending, not commander.js...
+        process.exit(0);
     }
-    // i chose the ending, not commander.js...
-    process.exit(retcode);
 });

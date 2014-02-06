@@ -1,10 +1,12 @@
-var logger = require('winston'),
+var temp = require('temp'),
+    logger = require('winston'),
     rewire = require("rewire"),
     StringReader = require('./lib/stringReader'),
     StringWriter = require('./lib/stringWriter'),
+    Migrate = require('../lib/migrate'),
 
     commandline = rewire('../lib/commandline'),
-    migrateCommand;
+    mockArgs;
 
 //----------------------------------------------------------------------------
 // Initialize Test Environment
@@ -12,6 +14,8 @@ var logger = require('winston'),
 
 // Remove the output so it doesn't interfere
 logger.clear();
+// Clean up the temporary files when we are done
+//temp.track();
 
 
 //----------------------------------------------------------------------------
@@ -35,10 +39,11 @@ function getArgv(name) {
 function checkCommand(tests, name) {
 
     function check(test) {
+        var dir = temp.mkdirSync(),
+            argv = getArgv(name);
         test.expect(1);
-        var argv = getArgv(name);
-        commandline(argv, function (err, retval) {
-            test.ok(retval === 0, "'" + name + "' command should exist.");
+        commandline(dir, argv, function (err) {
+            test.ok(err === undefined, "'" + name + "' command should exist.");
             test.done();
         });
     }
@@ -58,61 +63,116 @@ module.exports.tearDown = function (callback) {
     callback();
 };
 
-var tests = module.exports.commands = {
+module.exports.init = {
     "invalid commands": function (test) {
+        var dir = temp.mkdirSync(),
+            argv = getArgv('blah');
         test.expect(1);
-        var argv = getArgv('blah');
-        commandline(argv, function (err, retval) {
-            test.ok(retval === -1, "'blah' command should not exist.");
+        commandline(dir, argv, function (err) {
+            test.ok(err !== undefined, "Should return an error.");
             test.done();
         });
     },
-    "init defaults": function (test) {
+    "defaults": function (test) {
         // Need to set the process.stdin for promtly
-        var argv = getArgv('init'),
-            stdin = new StringReader('\n\n'),
-            stdout = new StringWriter(); // (just ignore the output)
-        commandline.__set__({ process: { stdin: stdin, stdout: stdout } });
-
-        test.expect(3);
-
-        commandline(argv, function (err, retval) {
-            test.ok(retval === 0, "'init' command should exist.");
-            test.ok(migrateCommand.args.engine === 'mysql', 'Default engine should be mysql');
-            test.ok(migrateCommand.args.database === 'test', 'Default database should be test');
+        var dir = temp.mkdirSync(),
+            argv = getArgv('init');
+        mockMigrate(true, 'init');
+        mockStdInOut(true, '\n\n\n\n');
+        test.expect(2);
+        commandline(dir, argv, function (err) {
+            test.ok(err === undefined, "'init' command should exist != "+ err);
+            test.ok(mockArgs.url === 'mysql://localhost/test', 'mysql://localhost/test != ' + mockArgs.url);
             test.done();
         });
     },
 
-    "init answers": function (test) {
+    "settings already exist": function (test) {
         // Need to set the process.stdin for promtly
-        var argv = getArgv('init'),
-            stdin = new StringReader('postgres\ndev\n'),
-            stdout = new StringWriter(); // (just ignore the output)
-        commandline.__set__({ process: { stdin: stdin, stdout: stdout } });
+        var dir = temp.mkdirSync(),
+            argv = getArgv('init');
+        mockStdInOut(true, '\n\n\n\n');
+        mockMigrate(false, 'init');
+        test.expect(2);
+        commandline(dir, argv, function (err) {
+            test.ok(err === undefined, "\"init\" command should exist != "+ err);
+            mockStdInOut(true, '\n\n\n\n');
+            commandline(dir, argv, function (err) {
+                test.ok(err, "Expected 'existing migration repo found, etc, etc != " + err);
+                test.done();
+            });
+        });
+    },
+
+    "answer questions": function (test) {
+        // Need to set the process.stdin for promtly
+        var dir = temp.mkdirSync(),
+            argv = getArgv('init');
+        mockStdInOut(true, 'postgres\nmydb\nmyusername\nmypassword\n');
+        mockMigrate(true, 'init');
         test.expect(3);
-        commandline(argv, function (err, retval) {
-            test.ok(retval === 0, "'init' command should exist.");
-            test.ok(migrateCommand.args.engine === 'postgres', 'engine should be postgres');
-            test.ok(migrateCommand.args.database === 'dev', 'database should be dev');
+        commandline(dir, argv, function (err) {
+            test.ok(err === undefined, "'init' command should exist.");
+            test.ok(mockArgs.url === 'postgres://localhost/mydb', 'url should be postgres://localhost/mydb != ' + mockArgs.url);
+            test.ok(mockArgs.username === 'myusername', 'username should be myusername != ' + mockArgs.username);
             test.done();
         });
     }
 };
 
-checkCommand(tests, 'create');
-checkCommand(tests, 'drop');
+function testCommand(cmd) {
+    return function (test) {
+        // Need to set the process.stdin for promtly
+        var dir = temp.mkdirSync(),
+            argv = getArgv(cmd);
+        mockStdInOut(true, '\n\n\n\n');
+        mockMigrate(true, cmd);
+        test.expect(1);
+        commandline(dir, argv, function (err) {
+            test.ok(err === undefined, "\"" + cmd + "\" command should exist.");
+            test.done();
+        });
+    };
+}
+
+module.exports.create = testCommand('create');
+module.exports.drop = testCommand('drop');
+
 
 
 //----------------------------------------------------------------------------
 // Rewire - Mock dependencies
 //----------------------------------------------------------------------------
 
-commandline.__set__({
-    migrate: {
-        execute: function (command, callback) {
-            migrateCommand = command;
-            callback(null, 0);
-        }
+function mockStdInOut(enable, str) {
+    // str = 'postgres\nmydb\nmyusername\nmypassword\n'
+    var stdin, stdout;
+    if (enable) {
+        stdin = new StringReader(str);
+        stdout = new StringWriter(); // (just ignore the output)
+        commandline.__set__({ process: { stdin: stdin, stdout: stdout } });
+    } else {
+        commandline.__set__({ process: { stdin: process.stdin, stdout: process.stdout } });
     }
-});
+}
+
+var MigrateSaved = {
+    init: Migrate.prototype.init,
+    create: Migrate.prototype.create,
+    drop: Migrate.prototype.drop
+};
+
+function mockMigrate(enable, func) {
+    if (enable) {
+        commandline.__set__('Migrate.prototype.' + func, function (args, callback) {
+            if (typeof args === "function") {
+                callback = args;
+                args = undefined;
+            }
+            mockArgs = args;
+            callback();
+        });
+    } else {
+        commandline.__set__('Migrate.prototype.' + func, MigrateSaved[func]);
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "settings": {
+        "changelog": "CHANGELOG",
+        "indent": 4,
+        "environment": "development"
+    },
+    "environments": {
+        "development": {
+            "url": "<%= url %>",
+            "username": "root",
+            "password": "secret"
+        }
+    }
+}

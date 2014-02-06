@@ -1,0 +1,32 @@
+#-----------------------------------------------------------------------------
+# Settings file for project
+#-----------------------------------------------------------------------------
+# The properties are set as follows:
+#
+# 1) Load settings from settings.yml
+# 2) .settings overrides settings.yml
+#
+# When the --env=test string is passed in, it will use the settings specified
+#   in the "test" section of environments. You can pass any environment
+#   string as long as there is a corresponding entry here or ".settings" file.
+#
+#   The ".settings" file should contain settings that should NOT
+#   be checked into a version control system.  Typically, they should contain
+#   things like the production database credentials.
+
+
+# The name of the changelog table that is used to track versions
+changelog: CHANGELOG
+
+# The number of spaces to indent in the yaml files, default is 4.
+indent: 4
+
+# This is the default environment to use if none is specified
+environment: development
+
+
+environments:
+    development:
+        url: <%= url %>
+        username: <%= username %>
+        password: <%= password %>

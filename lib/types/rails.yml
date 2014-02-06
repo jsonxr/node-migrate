@@ -1,0 +1,16 @@
+# Rails type mappings. These are aliases from rails into the generic types
+
+from:
+    # these are virtual types
+    - search: ^:string$
+      replace: string
+    - search: ^:string\((?P<limit>\d*)\)$
+      replace: string(\g<limit>)
+    - search: ^:boolean$
+      replace: boolean
+    - search: integer
+      replace: integer
+
+to:
+  - search: ^varchar(255)$
+    replace: :string
